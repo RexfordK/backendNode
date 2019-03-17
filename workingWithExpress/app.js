@@ -1,32 +1,22 @@
-const express = require("express");
-const app = express();
+const path = require('path');
 
-//handling different routes
-
-//body parse middleware
+const express = require('express');
 const bodyParser = require('body-parser');
 
-// adding other middleware
-app.use(bodyParser.urlencoded({ extended: false}));
+const app = express();
 
-app.use("/add-product", (req, res, next) => {
-    //only go to request of "/"
-    res.send("<h1>Add Product</h1><form action='product' method='post'><input type='text' name='title'><button type='submit'>Add Product</button></form>");
-});
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-app.use("/product", (req, res, next) => {
-    //this isn't parsed
-    console.log(req.body);
-    res.redirect("/");
-});
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+const route404 = require("./routes/404");
 
-app.use("/", (req, res, next) => {
-    //only go to request of "/"
-    res.send("<h1>Hello From Express</h1>");
-});
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/admin', adminData.routes);
+app.use(shopRoutes);
+app.use(route404);
 
-
-app.listen(3000, function () {
-    console.log("server is now running");
-})
+app.listen(3000);
